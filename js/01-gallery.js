@@ -11,19 +11,49 @@ import { galleryItems } from "./gallery-items.js";
 //     description: 'Hokkaido Flower',
 //   },
 
-const container = document.querySelector("gallery");
-const markup = galleryItems.map(
-  ({ preview, original, description }) =>
-    `<li><img src="${preview}" data-scr="${original}" alt="${description}" width="300"/></li>`
-);
-container.insertAdjacentHTML("beforeend", markup.join(""));
+const container = document.querySelector(".gallery");
+const markup = galleryItems
+  .map(
+    ({ preview, original, description }) => `<li class="gallery__item">
+      <a class="gallery__link" href="${original}">
+        <img
+          class="gallery__image"
+          src="${preview}"
+          data-picture="${original}"
+          alt="${description}"
+        />
+      </a>
+    </li>`
+  )
+  .join("");
+container.insertAdjacentHTML("beforeend", markup);
+container.addEventListener("click", handlerClick);
 
-console.log(container);
+function handlerClick(evt) {
+  evt.preventDefault();
+  if (!evt.target.classList.contains("gallery__image")) {
+    return;
+  }
 
-// const instance = basicLightbox.create(`
-//     <h1>Dynamic Content</h1>
-//     <p>You can set the content of the lightbox with JS.</p>
-// `);
+  const imgItem = evt.target.dataset.picture;
 
-// console.log(instance);
-// instance.show();
+  const instance = basicLightbox.create(
+    `<img src="${imgItem}" width="800" height="600">`,
+    {
+      onShow: (instance) => {
+        document.addEventListener("keydown", closeWindow);
+      },
+      onClose: (instance) => {
+        document.removeEventListener("keydown", closeWindow);
+      },
+    }
+  );
+
+  // console.log(instance);
+  instance.show();
+  function closeWindow(evt) {
+    if (evt.code === "Escape") {
+      instance.close();
+    }
+  }
+}
