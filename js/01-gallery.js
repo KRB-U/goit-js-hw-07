@@ -30,11 +30,13 @@ function handlerClick(evt) {
   const instance = basicLightbox.create(
     `<img src="${imgItem}" width="800" height="600">`,
     {
-      onShow: (instance) => {
-        document.addEventListener("keydown", closeWindow);
+      handler: null,
+      onShow(instance) {
+        this.handler = closeWindow.bind(instance);
+        document.addEventListener("keydown", this.handler);
       },
       onClose: (instance) => {
-        document.removeEventListener("keydown", closeWindow);
+        document.removeEventListener("keydown", this.handler);
       },
     }
   );
